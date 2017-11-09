@@ -1,0 +1,3 @@
+[submodule "src/mimi-dice-2013"]
+	path = src/mimi-dice-2013
+	url = https://github.com/anthofflab/mimi-dice-2013.jl.git
