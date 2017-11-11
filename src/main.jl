@@ -1,6 +1,13 @@
 using Interpolations
 using Plots
 using StatPlots
+using DataFrames
+using Formatting
+using FileIO
+
+gr()
+
+cd("src")
 
 include("mimi-dice-2013/src/marginaldamage.jl")
 
@@ -60,9 +67,20 @@ scc_antony_x_1_over_N_min = sum(npv_md_antony_x_1_over_N_min) / emission_pulse *
 scc_antony_x_90_max = sum(npv_md_antony_x_90_max) / emission_pulse * dollar_scalar
 scc_antony_x_90_min = sum(npv_md_antony_x_90_min) / emission_pulse * dollar_scalar
 
-println("")
+df = DataFrame([String, String], [:Name, :SCC],0)
+push!(df, ("Nordhaus", format(scc_bill, precision=1)))
+push!(df, ("EPA", format(scc_epa, precision=1)))
+push!(df, ("x=1", string(format(scc_antony_x_1_max, precision=1), "-", format(scc_antony_x_1_min, precision=1))))
+push!(df, ("x=90%", string(format(scc_antony_x_90_max, precision=1), "-", format(scc_antony_x_90_min, precision=1))))
+push!(df, ("x=1/N", string(format(scc_antony_x_1_over_N_max, precision=1), "-", format(scc_antony_x_1_over_N_min, precision=1))))
 
-boxplot(["Nordhaus", "EPA", "x=1", "x=1", "x=1/N", "x=1/N", "x=90%", "x=90%"],
+display(df)
+save("../output/scc.csv", df)
+
+p = scatter(["Nordhaus", "EPA", "x=1", "x=1", "x=1/N", "x=1/N", "x=90%", "x=90%"],
     [scc_bill, scc_epa, scc_antony_x_1_min, scc_antony_x_1_max,
     scc_antony_x_1_over_N_min, scc_antony_x_1_over_N_max,
-    scc_antony_x_90_min, scc_antony_x_90_max])
+    scc_antony_x_90_min, scc_antony_x_90_max],
+    markershape = :diamond, legend=false)
+
+save("../output/scc.png", p)
